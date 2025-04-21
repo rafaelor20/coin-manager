@@ -24,6 +24,8 @@ services:
   react:
     container_name: react
     build: ./front-end
+    env_file:
+      - front-end/.env.development
     volumes:
       - react-volume:/var/www/html
   
