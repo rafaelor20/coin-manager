@@ -1,26 +1,39 @@
 on:
-    push:
-      branches:
-        - main
+  push:
+    branches:
+      - main
+
 name: Build and Deploy on AWS
+
 jobs:
-    build:
-      runs-on: self-hosted
-      timeout-minutes: 10
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v3
-        - name: Create back-end env file
-          uses: SpicyPizza/create-envfile@v1.3.1
-          with:
-            envkey_PORT: ${{secrets.PORT}}
-            envkey_POSTGRES_USER: ${{secrets.POSTGRES_USER}}
-            envkey_POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
-            envkey_POSTGRES_DB: ${{secrets.POSTGRES_DB}}
-            envkey_DATABASE_URL: ${{secrets.DATABASE_URL}}
-            file_name: .env
-            fail_on_empty: true
-        - name: Build
-          run: docker compose build
-        - name: Run
-          run: docker compose down && docker compose up -d
+  build:
+    runs-on: ubuntu-latest
+    environment: EC2 
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Create back-end env file
+        run: |
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> back-end/.env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> back-end/.env
+
+      - name: Create front-end env file
+        run: |
+          echo "REACT_APP_BACKEND_URL=${{ secrets.REACT_APP_BACKEND_URL }}" >> front-end/.env
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /path/to/your/project
+            git pull origin main
+            docker compose down
+            docker compose up --build -d
+
+            
