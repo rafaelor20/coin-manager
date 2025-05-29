@@ -1,5 +1,5 @@
 # avoid routine error problem: error:0308010C:digital envelope routines::unsupported
-FROM node:16-alpine
+FROM node:18-alpine
 
 # folder where the build will go
 WORKDIR /tmp/react
