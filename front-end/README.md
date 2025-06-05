@@ -1,12 +1,3 @@
-# coin-manager-frontend
-
-Back-end for coin manager, a personal finance app.
-
-## About
-
-coin manager is personal finance management app that provides a simple
-way to streamline your finances, tracking your income and expenses
-
 ## How to run for development
 
 1. Clone this repository
