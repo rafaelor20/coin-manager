@@ -1,9 +1,5 @@
 # coin-manager
 
-Coin Manager is a personal finance app.
-
-## About
-
 coin manager is personal finance management app that provides a simple
 way to streamline your finances, tracking your income, expenses and debts
 
