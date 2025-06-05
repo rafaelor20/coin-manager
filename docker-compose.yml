@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: rafaelor20/coin_manager:v2
+    image: rafaelor20/coin_manager:v3
     container_name: coin_manager_bd
     restart: always
     ports:
