@@ -1,8 +1,8 @@
-version: '3.9'
+version: "3.9"
 services:
   postgres-test:
     image: postgres:17-alpine
-    container_name: coin_manager_test_db
+    container_name: coin_manager_db_test
     restart: always
     ports:
       - "5433:5432"
@@ -17,7 +17,7 @@ services:
 
   node-test:
     build: ./back-end
-    container_name: node-test
+    container_name: coin_manager_backend_test
     depends_on:
       - postgres-test
     env_file:

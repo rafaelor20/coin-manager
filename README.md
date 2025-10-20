@@ -9,7 +9,7 @@ way to streamline your finances, tracking your income, expenses and debts
 
 ## User for manual testing the app
 
-email: testuser@teste.com
+email: user@test.com
 
 password: qwerasdf
 

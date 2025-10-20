@@ -1,7 +1,7 @@
 services:
   postgres:
     image: rafaelor20/coin_manager:v2
-    container_name: coin_manager
+    container_name: coin_manager_db
     restart: always
     ports:
       - 5433:5432
@@ -11,7 +11,7 @@ services:
       - postgres-volume:/var/lib/postgresql/data
 
   node:
-    container_name: node
+    container_name: coin_manager_backend
     build: ./back-end
     restart: always
     ports:
@@ -20,19 +20,19 @@ services:
       - postgres
     env_file:
       - back-end/.env
-  
+
   react:
-    container_name: react
+    container_name: coin_manager_react
     build: ./front-end
     volumes:
       - react-volume:/var/www/html
-  
+
   nginx:
-    container_name: nginx_app
+    container_name: coin_manager_nginx
     build: ./nginx
     restart: always
     ports:
-      - 8080:8080
+      - 8080:80
     volumes:
       - react-volume:/var/www/html
     depends_on:
