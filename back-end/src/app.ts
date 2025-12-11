@@ -2,7 +2,8 @@ import 'reflect-metadata';
 import 'express-async-errors';
 import express, { Express } from 'express';
 import cors from 'cors';
-
+import * as swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './swagger';
 import { loadEnv, connectDb, disconnectDB } from '@/config';
 
 loadEnv();
@@ -13,8 +14,9 @@ import { usersRouter, authenticationRouter, transactionRouter, debtRouter, credi
 const app = express();
 app
   .use(cors())
-  .use(express.json())
+  .use(express.json()) // This line is causing the error
   .get('/health', (_req, res) => res.send('OK!'))
+  .use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
   .use('/users', usersRouter)
   .use('/auth', authenticationRouter)
   .use('/transactions', transactionRouter)

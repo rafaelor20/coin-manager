@@ -50,6 +50,8 @@
     "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^20.5.6",
     "@types/supertest": "^2.0.12",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
     "cross-env": "^7.0.3",
@@ -91,6 +93,8 @@
     "nodemon": "^3.0.1",
     "redis": "^4.6.6",
     "reflect-metadata": "^0.1.13",
-    "semver": "^7.5.4"
+    "semver": "^7.5.4",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }
