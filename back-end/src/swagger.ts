@@ -41,6 +41,37 @@ const options: swaggerJsdoc.Options = {
             },
           },
         },
+        Debt: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'integer',
+            },
+            userId: {
+              type: 'integer',
+            },
+            description: {
+              type: 'string',
+            },
+            creditor: {
+              type: 'string',
+            },
+            amount: {
+              type: 'number',
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+            paid: {
+              type: 'boolean',
+            },
+            payDate: {
+              type: 'string',
+              format: 'date-time',
+            },
+          },
+        },
       },
     },
     security: [
