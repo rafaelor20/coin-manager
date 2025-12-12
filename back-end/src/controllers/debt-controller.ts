@@ -75,7 +75,7 @@ export async function debtPayment(req: AuthenticatedRequest, res: Response, next
       return res.status(httpStatus.UNAUTHORIZED).send({ error: error.message });
     }
 
-    if (error.message === 'Id is not valid number') {
+    if (error.name === 'NotFoundError') {
       return res.status(httpStatus.NOT_FOUND).send({ error: error.message });
     }
     next(error);

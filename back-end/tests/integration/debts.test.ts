@@ -56,12 +56,22 @@ describe('GET /debts', () => {
 
       for (let i = 0; i < 10; i++) {
         debt = await createDebt(user);
-        await server.post('/debts/store').set('Authorization', `Bearer ${token}`).send(debt);
+        await server.post('/debts/store').set('Authorization', `Bearer ${token}`).send({
+          creditor: debt.creditor,
+          description: debt.description,
+          amount: debt.amount,
+          payDate: debt.payDate,
+        });
       }
 
       for (let i = 0; i < 10; i++) {
         debt2 = await createDebt(user2);
-        await server.post('/debts/store').set('Authorization', `Bearer ${token2}`).send(debt2);
+        await server.post('/debts/store').set('Authorization', `Bearer ${token2}`).send({
+          creditor: debt2.creditor,
+          description: debt2.description,
+          amount: debt2.amount,
+          payDate: debt2.payDate,
+        });
       }
 
       const response = await server.get('/debts').set('Authorization', `Bearer ${token}`);
@@ -120,12 +130,22 @@ describe('GET /debts/all', () => {
 
       for (let i = 0; i < 10; i++) {
         debt = await createDebt(user);
-        await server.post('/debts/store').set('Authorization', `Bearer ${token}`).send(debt);
+        await server.post('/debts/store').set('Authorization', `Bearer ${token}`).send({
+          creditor: debt.creditor,
+          description: debt.description,
+          amount: debt.amount,
+          payDate: debt.payDate,
+        });
       }
 
       for (let i = 0; i < 10; i++) {
         debt2 = await createDebt(user2);
-        await server.post('/debts/store').set('Authorization', `Bearer ${token2}`).send(debt2);
+        await server.post('/debts/store').set('Authorization', `Bearer ${token2}`).send({
+          creditor: debt2.creditor,
+          description: debt2.description,
+          amount: debt2.amount,
+          payDate: debt2.payDate,
+        });
       }
 
       const response = await server.get('/debts/all').set('Authorization', `Bearer ${token}`);
@@ -255,7 +275,12 @@ describe('POST /debts/store', () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const debt = await createDebt(user);
-      const body = debt;
+      const body = {
+        creditor: debt.creditor,
+        description: debt.description,
+        amount: debt.amount,
+        payDate: debt.payDate,
+      };
       const response = await server.post('/debts/store').set('Authorization', `Bearer ${token}`).send(body);
 
       expect(response.status).toBe(httpStatus.CREATED);
@@ -362,8 +387,7 @@ describe('POST /debts/payment/:debtId', () => {
         const user = await createUser();
         const token = await generateValidToken(user);
         const paymentBody = {
-          userId: user.id,
-          payment: 11,
+          amount: 11,
         };
         const response = await server
           .post('/debts/payment/10')
@@ -381,7 +405,6 @@ describe('POST /debts/payment/:debtId', () => {
         const debt = await createDebt(user);
         await server.post('/debts/store').set('Authorization', `Bearer ${token}`).send(debt);
         const paymentBody = {
-          userId: user.id,
           amount: debt.amount - 1,
         };
         const response = await server
@@ -418,7 +441,6 @@ describe('POST /debts/payment/:debtId', () => {
         const debt = await createDebt(user);
         await server.post('/debts/store').set('Authorization', `Bearer ${token}`).send(debt);
         const paymentBody = {
-          userId: user.id,
           amount: debt.amount,
         };
         const response = await server

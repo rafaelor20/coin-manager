@@ -1,6 +1,12 @@
 import { Debt } from '@prisma/client';
 import moment from 'moment';
-import { unauthorizedError, invalidAmountError, invalidCreditorError, invalidPayDateError } from '@/errors';
+import {
+  unauthorizedError,
+  invalidAmountError,
+  invalidCreditorError,
+  invalidPayDateError,
+  notFoundError,
+} from '@/errors';
 import debtRepository from '@/repositories/debt-repository';
 import userRepository from '@/repositories/user-repository';
 import transactionService from '@/services/transaction-service';
@@ -85,6 +91,11 @@ async function debtPayment(userId: number, debtId: number, amount: number) {
   await checkUserIdByDebtId(userId, debtId);
   checkAmount(amount);
   const debt = await debtRepository.getDebtById(debtId);
+
+  if (!debt) {
+    throw notFoundError();
+  }
+
   let Debt;
   if (debt.amount > amount) {
     Debt = await partialPayment(debt, amount);
