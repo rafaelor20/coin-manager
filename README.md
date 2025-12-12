@@ -13,7 +13,7 @@ email: user@test.com
 
 password: qwerasdf
 
-## To run the project using docker compose, execute ti command below withing the terminal in the root folder of the project
+## To run the project using docker compose, execute the command below withing the terminal in the root folder of the project
 
 docker compose -f 'docker-compose.yml' up -d --build
 
