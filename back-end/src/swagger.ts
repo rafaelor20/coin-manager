@@ -16,6 +16,32 @@ const options: swaggerJsdoc.Options = {
           bearerFormat: 'JWT',
         },
       },
+      schemas: {
+        Transaction: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'integer',
+            },
+            userId: {
+              type: 'integer',
+            },
+            entity: {
+              type: 'string',
+            },
+            description: {
+              type: 'string',
+            },
+            amount: {
+              type: 'number',
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+          },
+        },
+      },
     },
     security: [
       {
