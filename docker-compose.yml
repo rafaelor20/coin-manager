@@ -6,7 +6,7 @@ services:
     ports:
       - 5433:5432
     env_file:
-      - back-end/.env
+      - back-end/.env.development
     volumes:
       - postgres-volume:/var/lib/postgresql/data
 
@@ -19,7 +19,7 @@ services:
     depends_on:
       - postgres
     env_file:
-      - back-end/.env
+      - back-end/.env.development
 
   react:
     container_name: coin_manager_react
