@@ -17,3 +17,28 @@ export async function signInPost(req: Request, res: Response) {
     return res.status(httpStatus.UNAUTHORIZED).send({});
   }
 }
+
+export async function forgotPasswordPost(req: Request, res: Response) {
+  const { email } = req.body as { email: string };
+
+  try {
+    await authenticationService.forgotPassword(email);
+    return res.sendStatus(httpStatus.OK);
+  } catch (error) {
+    return res.status(httpStatus.NOT_FOUND).send({});
+  }
+}
+
+export async function resetPassword(req: Request, res: Response) {
+  const { token, password } = req.body as { token: string; password: string };
+
+  try {
+    await authenticationService.resetPassword(token, password);
+    return res.sendStatus(httpStatus.OK);
+  } catch (error) {
+    if (error.name === 'NotFoundError') {
+      return res.status(httpStatus.NOT_FOUND).send({});
+    }
+    return res.status(httpStatus.UNAUTHORIZED).send({});
+  }
+}

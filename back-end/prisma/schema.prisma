@@ -9,6 +9,7 @@ model User {
     email        String        @unique
     createdAt    DateTime      @default(now())
     amount       Float         @default(0)
+    token        String?
     sessions     Session[]
     transactions Transaction[]
     Debts        Debt[]
