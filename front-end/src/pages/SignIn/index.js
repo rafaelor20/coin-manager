@@ -52,6 +52,9 @@ export default function SignIn() {
         <Row>
           <Link to="/Sign-up">Create a account here!</Link>
         </Row>
+        <Row>
+          <Link to="/forgot-password">Forgot password?</Link>
+        </Row>
       </Container>
     </Page>
   );

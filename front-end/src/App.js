@@ -3,6 +3,8 @@ import { ToastContainer } from 'react-toastify';
 
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Home from './pages/Home';
 import MoneyIn from './pages/Register/MoneyIn';
 import MoneyOut from './pages/Register/MoneyOut';
@@ -26,6 +28,8 @@ export default function App() {
           <Routes>
             <Route path="/" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             
             <Route
               path="/home"

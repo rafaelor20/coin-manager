@@ -31,7 +31,6 @@ export async function forgotPasswordPost(req: Request, res: Response) {
 
 export async function resetPassword(req: Request, res: Response) {
   const { token, password } = req.body as { token: string; password: string };
-
   try {
     await authenticationService.resetPassword(token, password);
     return res.sendStatus(httpStatus.OK);
