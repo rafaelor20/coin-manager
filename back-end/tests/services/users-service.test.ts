@@ -17,6 +17,7 @@ describe('userService.createUser', () => {
     password: 'hashedPassword',
     createdAt: new Date(),
     amount: 0,
+    token: '',
   };
 
   const validParams = {
@@ -32,6 +33,7 @@ describe('userService.createUser', () => {
       password: 'hashedPassword',
       createdAt: new Date(),
       amount: 0,
+      token: '',
     });
   });
 
@@ -46,6 +48,7 @@ describe('userService.createUser', () => {
       createdAt: expect.any(Date),
       amount: mockUser.amount,
       password: mockUser.password,
+      token: mockUser.token,
     });
     expect(userRepository.findByEmail).toHaveBeenCalledWith(validParams.email);
     expect(bcrypt.hash).toHaveBeenCalledWith(validParams.password, 12);

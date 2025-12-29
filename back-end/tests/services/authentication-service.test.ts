@@ -17,6 +17,7 @@ describe('authenticationService.signIn', () => {
     password: 'hashedPassword',
     createdAt: new Date(),
     amount: 100,
+    token: '',
   };
 
   const validParams = {
@@ -48,6 +49,7 @@ describe('authenticationService.signIn', () => {
         email: mockUser.email,
         amount: mockUser.amount,
         createdAt: mockUser.createdAt.toISOString(),
+        token: mockUser.token,
       },
       token: mockToken,
     });
