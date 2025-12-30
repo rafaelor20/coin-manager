@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authenticateToken } from '@/middlewares';
+import { authenticateToken, validateBody } from '@/middlewares';
 import {
   getCredits,
   getAllCredits,
@@ -8,6 +8,7 @@ import {
   removeCredit,
   creditPayment,
 } from '@/controllers/credit-controller';
+import { creditSchema, creditPaymentSchema } from '@/schemas/credit-schemas';
 
 const creditRouter = Router();
 
@@ -130,7 +131,7 @@ creditRouter.get('/:creditId', authenticateToken, getCreditById);
  *       401:
  *         description: Unauthorized
  */
-creditRouter.post('/store', authenticateToken, storeCredit);
+creditRouter.post('/store', authenticateToken, validateBody(creditSchema), storeCredit);
 
 /**
  * @swagger
@@ -155,7 +156,7 @@ creditRouter.post('/store', authenticateToken, storeCredit);
  *       404:
  *         description: Credit not found
  */
-creditRouter.delete('/delete/:creditId', authenticateToken, removeCredit);
+creditRouter.delete('/delete/:creditId', authenticateToken, validateBody(creditPaymentSchema), removeCredit);
 
 /**
  * @swagger

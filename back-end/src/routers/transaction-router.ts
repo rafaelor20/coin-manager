@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { authenticateToken } from '@/middlewares';
+import { authenticateToken, validateBody } from '@/middlewares';
 import { getHistoric, storeTransaction, deleteTransaction } from '@/controllers/transaction-controller';
+import { createTransactionSchema } from '@/schemas/transaction-schemas';
 
 const transactionRouter = Router();
 
@@ -62,7 +63,7 @@ transactionRouter
    *       401:
    *         description: Unauthorized
    */
-  .post('/store', storeTransaction)
+  .post('/store', authenticateToken, validateBody(createTransactionSchema), storeTransaction)
   /**
    * @swagger
    * /transaction/delete/{transactionId}:
@@ -86,6 +87,6 @@ transactionRouter
    *       404:
    *         description: Not Found
    */
-  .delete('/delete/:transactionId', deleteTransaction);
+  .delete('/delete/:transactionId', authenticateToken, deleteTransaction);
 
 export { transactionRouter };

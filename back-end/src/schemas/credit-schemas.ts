@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-export const debtSchema = Joi.object({
+export const creditSchema = Joi.object({
   creditor: Joi.string().required(),
   description: Joi.string(),
   amount: Joi.number().positive().required(),
@@ -16,6 +16,6 @@ export const debtSchema = Joi.object({
   }),
 });
 
-export const debtPaymentSchema = Joi.object({
+export const creditPaymentSchema = Joi.object({
   amount: Joi.number().positive().required(),
 });

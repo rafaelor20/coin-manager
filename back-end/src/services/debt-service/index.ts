@@ -28,25 +28,9 @@ async function checkUserById(id: number) {
   }
 }
 
-function checkAmount(amount: number) {
-  amount = Number(amount);
-  if (typeof amount !== 'number' || isNaN(amount)) {
-    throw invalidAmountError();
-  }
-}
-
 function checkPayDate(payDate: Date) {
   if (payDate !== null && !moment(payDate).isSameOrAfter(moment(), 'day')) {
     throw invalidPayDateError();
-  }
-}
-
-function isValidCreditor(creditor: string) {
-  if (typeof creditor !== 'string') {
-    throw invalidCreditorError();
-  }
-  if (creditor.trim() === '') {
-    throw invalidCreditorError();
   }
 }
 
@@ -60,10 +44,7 @@ async function getAllDebts(userId: number) {
 
 async function storeDebt({ userId, creditor, description, amount, payDate }: CreateDebtParams) {
   checkUserById(userId);
-  checkAmount(amount);
   checkPayDate(payDate);
-  isValidCreditor(creditor);
-  amount = Number(amount);
   return debtRepository.storeDebt({ userId, creditor, description, amount, payDate });
 }
 
@@ -89,7 +70,6 @@ async function fullPayment(debt: Debt) {
 
 async function debtPayment(userId: number, debtId: number, amount: number) {
   await checkUserIdByDebtId(userId, debtId);
-  checkAmount(amount);
   const debt = await debtRepository.getDebtById(debtId);
 
   if (!debt) {

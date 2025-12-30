@@ -17,13 +17,6 @@ async function checkTransactionById(id: number) {
   }
 }
 
-function checkAmount(amount: number) {
-  amount = Number(amount);
-  if (typeof amount !== 'number' || isNaN(amount)) {
-    throw invalidAmountError();
-  }
-}
-
 function isValidDescription(debtor: string) {
   if (typeof debtor !== 'string') {
     throw invalidDescriptionError();
@@ -39,7 +32,6 @@ async function getHistoric(userId: number) {
 
 async function storeTransaction({ userId, description, amount, entity }: CreateTransactionParams) {
   checkUserById(userId);
-  checkAmount(amount);
   isValidDescription(description);
   amount = Number(amount);
   return transactionRepository.storeTransaction({ userId, description, amount, entity });
