@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
 export const creditSchema = Joi.object({
-  creditor: Joi.string().required(),
+  debtor: Joi.string().required(),
   description: Joi.string(),
   amount: Joi.number().positive().required(),
   payDate: Joi.date().custom((value, helpers) => {

@@ -156,7 +156,7 @@ creditRouter.post('/store', authenticateToken, validateBody(creditSchema), store
  *       404:
  *         description: Credit not found
  */
-creditRouter.delete('/delete/:creditId', authenticateToken, validateBody(creditPaymentSchema), removeCredit);
+creditRouter.delete('/delete/:creditId', authenticateToken, removeCredit);
 
 /**
  * @swagger

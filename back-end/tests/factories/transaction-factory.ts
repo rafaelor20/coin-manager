@@ -12,3 +12,11 @@ export async function createTransaction(params: Partial<User> = {}): Promise<Tra
     },
   });
 }
+
+export function generateTransactionBody() {
+  return {
+    description: faker.lorem.sentence(),
+    amount: faker.datatype.number({ min: 1, max: 100000 }),
+    entity: faker.company.companyName(),
+  };
+}

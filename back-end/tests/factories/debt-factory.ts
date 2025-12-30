@@ -6,11 +6,20 @@ export async function createDebt(params: Partial<User> = {}): Promise<Debt> {
   return prisma.debt.create({
     data: {
       userId: params.id || 12,
-      creditor: faker.word.preposition(),
+      creditor: faker.company.companyName(),
       description: faker.lorem.sentence(),
-      amount: 3214,
-      payDate: faker.date.soon(),
+      amount: faker.datatype.number({ min: 1, max: 100000 }),
+      payDate: faker.date.future(1),
       paid: false,
     },
   });
+}
+
+export function generateDebtBody() {
+  return {
+    creditor: faker.company.companyName(),
+    description: faker.lorem.sentence(),
+    amount: faker.datatype.number({ min: 1, max: 100000 }),
+    payDate: faker.date.future(1),
+  };
 }

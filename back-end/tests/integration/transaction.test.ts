@@ -3,7 +3,7 @@ import * as jwt from 'jsonwebtoken';
 import httpStatus from 'http-status';
 import supertest from 'supertest';
 import { cleanDb, generateValidToken } from '../helpers';
-import { createUser, createTransaction } from '../factories';
+import { createUser, createTransaction, generateTransactionBody } from '../factories';
 import app, { init, close } from '@/app';
 
 beforeAll(async () => {
@@ -51,18 +51,15 @@ describe('GET /transactions/historic', () => {
       const user2 = await createUser();
       const token = await generateValidToken(user);
       const token2 = await generateValidToken(user2);
-
-      let transaction;
-      let transaction2;
+      const transactionBody = generateTransactionBody();
+      const transactionBody2 = generateTransactionBody();
 
       for (let i = 0; i < 10; i++) {
-        transaction = await createTransaction(user);
-        await server.post('/transactions/store').set('Authorization', `Bearer ${token}`).send(transaction);
+        await server.post('/transactions/store').set('Authorization', `Bearer ${token}`).send(transactionBody);
       }
 
       for (let i = 0; i < 10; i++) {
-        transaction2 = await createTransaction(user2);
-        await server.post('/transactions/store').set('Authorization', `Bearer ${token2}`).send(transaction2);
+        await server.post('/transactions/store').set('Authorization', `Bearer ${token2}`).send(transactionBody2);
       }
 
       const response = await server.get('/transactions/historic').set('Authorization', `Bearer ${token}`);
@@ -72,7 +69,7 @@ describe('GET /transactions/historic', () => {
         expect.arrayContaining([
           expect.objectContaining({
             id: expect.any(Number),
-            userId: transaction.userId,
+            userId: user.id,
             description: expect.any(String),
             amount: expect.any(Number),
             entity: expect.any(String),
@@ -112,7 +109,7 @@ describe('POST /transactions/store', () => {
     it('should respond with status 400 if amount is invalid', async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
-      const transaction = await createTransaction(user);
+      const transaction = generateTransactionBody();
       transaction.amount = undefined;
       const body = transaction;
       const response = await server.post('/transactions/store').set('Authorization', `Bearer ${token}`).send(body);
@@ -123,7 +120,7 @@ describe('POST /transactions/store', () => {
     it('should respond with status 400 if description is invalid', async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
-      const transaction = await createTransaction(user);
+      const transaction = generateTransactionBody();
       transaction.description = '';
       const body = transaction;
       const response = await server.post('/transactions/store').set('Authorization', `Bearer ${token}`).send(body);
@@ -134,18 +131,17 @@ describe('POST /transactions/store', () => {
     it('should respond with status 201 and create store', async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
-      const transaction = await createTransaction(user);
-      const body = transaction;
+      const body = generateTransactionBody();
       const response = await server.post('/transactions/store').set('Authorization', `Bearer ${token}`).send(body);
 
       expect(response.status).toBe(httpStatus.CREATED);
       expect(response.body).toEqual({
         id: expect.any(Number),
-        userId: transaction.userId,
-        description: transaction.description,
-        amount: transaction.amount,
+        userId: user.id,
+        description: body.description,
+        amount: body.amount,
         createdAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/),
-        entity: transaction.entity,
+        entity: body.entity,
       });
     });
   });
@@ -181,7 +177,7 @@ describe('DELETE /transactions/delete/:transactionId', () => {
     const storedTransaction = await server
       .post('/transactions/store')
       .set('Authorization', `Bearer ${token}`)
-      .send(transaction);
+      .send({ description: transaction.description, amount: transaction.amount, entity: transaction.entity });
     const response = await server
       .delete(`/transactions/delete/${storedTransaction.body.id}`)
       .set('Authorization', `Bearer ${token}`);

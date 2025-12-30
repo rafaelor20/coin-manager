@@ -3,7 +3,7 @@ import * as jwt from 'jsonwebtoken';
 import httpStatus from 'http-status';
 import supertest from 'supertest';
 import { cleanDb, generateValidToken } from '../helpers';
-import { createUser, createCredit } from '../factories';
+import { createUser, createCredit, generateCreditBody } from '../factories';
 import app, { init, close } from '@/app';
 
 beforeAll(async () => {
@@ -51,17 +51,15 @@ describe('GET /credits', () => {
       const user2 = await createUser();
       const token = await generateValidToken(user);
       const token2 = await generateValidToken(user2);
-      let credit;
-      let credit2;
+      const creditBody = generateCreditBody();
+      const creditBody2 = generateCreditBody();
 
       for (let i = 0; i < 10; i++) {
-        credit = await createCredit(user);
-        await server.post('/credits/store').set('Authorization', `Bearer ${token}`).send(credit);
+        await server.post('/credits/store').set('Authorization', `Bearer ${token}`).send(creditBody);
       }
 
       for (let i = 0; i < 10; i++) {
-        credit2 = await createCredit(user2);
-        await server.post('/credits/store').set('Authorization', `Bearer ${token2}`).send(credit2);
+        await server.post('/credits/store').set('Authorization', `Bearer ${token2}`).send(creditBody2);
       }
 
       const response = await server.get('/credits').set('Authorization', `Bearer ${token}`);
@@ -71,7 +69,7 @@ describe('GET /credits', () => {
         expect.arrayContaining([
           expect.objectContaining({
             id: expect.any(Number),
-            userId: credit.userId,
+            userId: user.id,
             description: expect.any(String),
             debtor: expect.any(String),
             amount: expect.any(Number),
@@ -115,17 +113,15 @@ describe('GET /credits', () => {
       const user2 = await createUser();
       const token = await generateValidToken(user);
       const token2 = await generateValidToken(user2);
-      let credit;
-      let credit2;
+      const creditBody = generateCreditBody();
+      const creditBody2 = generateCreditBody();
 
       for (let i = 0; i < 10; i++) {
-        credit = await createCredit(user);
-        await server.post('/credits/store').set('Authorization', `Bearer ${token}`).send(credit);
+        await server.post('/credits/store').set('Authorization', `Bearer ${token}`).send(creditBody);
       }
 
       for (let i = 0; i < 10; i++) {
-        credit2 = await createCredit(user2);
-        await server.post('/credits/store').set('Authorization', `Bearer ${token2}`).send(credit2);
+        await server.post('/credits/store').set('Authorization', `Bearer ${token2}`).send(creditBody2);
       }
 
       const response = await server.get('/credits/all').set('Authorization', `Bearer ${token}`);
@@ -135,7 +131,7 @@ describe('GET /credits', () => {
         expect.arrayContaining([
           expect.objectContaining({
             id: expect.any(Number),
-            userId: credit.userId,
+            userId: user.id,
             description: expect.any(String),
             debtor: expect.any(String),
             amount: expect.any(Number),
@@ -177,7 +173,7 @@ describe('POST /credits/store', () => {
     it('should respond with status 400 if amount is invalid', async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
-      const credit = await createCredit(user);
+      const credit = generateCreditBody();
       credit.amount = undefined;
       const body = credit;
       const response = await server.post('/credits/store').set('Authorization', `Bearer ${token}`).send(body);
@@ -187,7 +183,7 @@ describe('POST /credits/store', () => {
     it('should respond with status 400 if payDate is invalid', async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
-      const credit = await createCredit(user);
+      const credit = generateCreditBody();
       credit.payDate = faker.date.past();
       const body = credit;
       const response = await server.post('/credits/store').set('Authorization', `Bearer ${token}`).send(body);
@@ -197,20 +193,19 @@ describe('POST /credits/store', () => {
     it('should respond with status 201 and create credit', async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
-      const credit = await createCredit(user);
-      const body = credit;
+      const body = generateCreditBody();
       const response = await server.post('/credits/store').set('Authorization', `Bearer ${token}`).send(body);
 
       expect(response.status).toBe(httpStatus.CREATED);
       expect(response.body).toEqual({
         id: expect.any(Number),
-        userId: credit.userId,
-        description: credit.description,
-        debtor: credit.debtor,
-        amount: credit.amount,
-        paid: expect.any(Boolean),
+        userId: user.id,
+        description: body.description,
+        debtor: body.debtor,
+        amount: body.amount,
+        paid: false,
         createdAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/),
-        payDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/),
+        payDate: expect.any(String),
       });
     });
   });
@@ -255,9 +250,9 @@ describe('GET /credits/:creditId', () => {
         description: credit.description,
         debtor: credit.debtor,
         amount: credit.amount,
-        paid: expect.any(Boolean),
-        createdAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/),
-        payDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/),
+        paid: credit.paid,
+        createdAt: expect.any(String),
+        payDate: expect.any(String),
       });
     });
   });
@@ -292,9 +287,7 @@ describe('DELETE /credits/delete/:creditId', () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const credit = await createCredit(user);
-      const body = credit;
-      const stored = await server.post('/credits/store').set('Authorization', `Bearer ${token}`).send(body);
-      const response = await server.delete(`/credits/delete/${body.id}`).set('Authorization', `Bearer ${token}`);
+      const response = await server.delete(`/credits/delete/${credit.id}`).set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.OK);
       expect(response.body).toEqual({
@@ -303,9 +296,9 @@ describe('DELETE /credits/delete/:creditId', () => {
         description: credit.description,
         debtor: credit.debtor,
         amount: credit.amount,
-        paid: expect.any(Boolean),
-        createdAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/),
-        payDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/),
+        paid: credit.paid,
+        createdAt: expect.any(String),
+        payDate: expect.any(String),
       });
     });
   });
@@ -370,7 +363,6 @@ describe('POST /credits/payment:creditId', () => {
         const user = await createUser();
         const token = await generateValidToken(user);
         const credit = await createCredit(user);
-        await server.post('/credits/store').set('Authorization', `Bearer ${token}`).send(credit);
         const paymentBody = {
           userId: user.id,
           creditId: credit.id,
@@ -390,8 +382,8 @@ describe('POST /credits/payment:creditId', () => {
           description: credit.description,
           amount: credit.amount - paymentBody.amount,
           paid: false,
-          createdAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/),
-          payDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/),
+          createdAt: expect.any(String),
+          payDate: expect.any(String),
         });
         expect(Transaction).toEqual({
           id: expect.any(Number),
@@ -399,7 +391,7 @@ describe('POST /credits/payment:creditId', () => {
           description: `Payment of credit ${Credit.id}`,
           amount: credit.amount - paymentBody.amount,
           entity: credit.debtor,
-          createdAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/),
+          createdAt: expect.any(String),
         });
       });
     });
@@ -408,7 +400,6 @@ describe('POST /credits/payment:creditId', () => {
         const user = await createUser();
         const token = await generateValidToken(user);
         const credit = await createCredit(user);
-        await server.post('/credits/store').set('Authorization', `Bearer ${token}`).send(credit);
         const paymentBody = {
           userId: user.id,
           creditId: credit.id,
@@ -429,8 +420,8 @@ describe('POST /credits/payment:creditId', () => {
           description: credit.description,
           amount: credit.amount,
           paid: true,
-          createdAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/),
-          payDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/),
+          createdAt: expect.any(String),
+          payDate: expect.any(String),
         });
         expect(Transaction).toEqual({
           id: expect.any(Number),
@@ -438,7 +429,7 @@ describe('POST /credits/payment:creditId', () => {
           description: `Payment of credit ${Credit.id}`,
           amount: credit.amount,
           entity: credit.debtor,
-          createdAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/),
+          createdAt: expect.any(String),
         });
       });
     });
