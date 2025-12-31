@@ -37,6 +37,7 @@ async function getAllCredits(userId: number) {
 
 async function storeCredit({ userId, description, debtor, amount, payDate }: CreateCreditParams) {
   checkUserById(userId);
+  amount = Number(amount);
   return creditRepository.storeCredit({ userId, debtor, amount, payDate, description });
 }
 

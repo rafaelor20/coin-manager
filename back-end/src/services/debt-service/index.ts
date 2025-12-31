@@ -45,6 +45,7 @@ async function getAllDebts(userId: number) {
 async function storeDebt({ userId, creditor, description, amount, payDate }: CreateDebtParams) {
   checkUserById(userId);
   checkPayDate(payDate);
+  amount = Number(amount);
   return debtRepository.storeDebt({ userId, creditor, description, amount, payDate });
 }
 

@@ -194,7 +194,7 @@ creditRouter.delete('/delete/:creditId', authenticateToken, removeCredit);
  *       404:
  *         description: Credit not found or invalid amount
  */
-creditRouter.post('/payment/:creditId', authenticateToken, creditPayment);
+creditRouter.post('/payment/:creditId', authenticateToken, validateBody(creditPaymentSchema), creditPayment);
 
 export { creditRouter };
 
