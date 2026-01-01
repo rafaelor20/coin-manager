@@ -1,5 +1,5 @@
 import { Credit } from '@prisma/client';
-import { unauthorizedError, invalidCreditIdError } from '@/errors';
+import { unauthorizedError, invalidCreditIdError, notFoundError } from '@/errors';
 import creditRepository from '@/repositories/credit-repository';
 import userRepository from '@/repositories/user-repository';
 import transactionService from '@/services/transaction-service';
@@ -13,7 +13,7 @@ function checkCreditIdIsNumber(value: any) {
 async function checkUserIdByCreditId(userId: number, creditId: number) {
   const credit = await creditRepository.getCreditById(creditId);
   if (!credit) {
-    throw invalidCreditIdError();
+    throw notFoundError();
   }
   if (credit.userId !== userId) {
     throw unauthorizedError();
@@ -73,7 +73,7 @@ async function creditPayment(userId: number, creditId: number, payment: number) 
   const Transaction = await transactionService.storeTransaction({
     userId,
     description: `Payment of credit ${Credit.id}`,
-    amount: Credit.amount,
+    amount: payment,
     entity: Credit.debtor,
   });
   return { Credit, Transaction };

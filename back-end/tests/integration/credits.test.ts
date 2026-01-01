@@ -389,7 +389,7 @@ describe('POST /credits/payment:creditId', () => {
           id: expect.any(Number),
           userId: user.id,
           description: `Payment of credit ${Credit.id}`,
-          amount: credit.amount - paymentBody.amount,
+          amount: paymentBody.amount,
           entity: credit.debtor,
           createdAt: expect.any(String),
         });
