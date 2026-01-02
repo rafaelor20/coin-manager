@@ -86,7 +86,7 @@ async function debtPayment(userId: number, debtId: number, amount: number) {
   const Transaction = await transactionService.storeTransaction({
     userId,
     description: `Payment of debt ${Debt.id}`,
-    amount: Debt.amount,
+    amount: amount * -1,
     entity: Debt.creditor,
   });
   return { Debt, Transaction };

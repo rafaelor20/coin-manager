@@ -396,7 +396,7 @@ describe('POST /debts/payment/:debtId', () => {
           id: expect.any(Number),
           userId: user.id,
           description: `Payment of debt ${Debt.id}`,
-          amount: debt.amount - paymentBody.amount,
+          amount: paymentBody.amount * -1,
           entity: debt.creditor,
           createdAt: expect.any(String),
         });
@@ -432,7 +432,7 @@ describe('POST /debts/payment/:debtId', () => {
           id: expect.any(Number),
           userId: user.id,
           description: `Payment of debt ${Debt.id}`,
-          amount: debt.amount,
+          amount: paymentBody.amount * -1,
           entity: debt.creditor,
           createdAt: expect.any(String),
         });
