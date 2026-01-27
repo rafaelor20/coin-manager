@@ -1,35 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mongodb
+  name: postgresql
 spec:
   selector:
     matchLabels:
-      app: mongodb
+      app: postgresql
   template:
     metadata:
       labels:
-        app: mongodb
+        app: postgresql
     spec:
       containers:
-        - name: mongodb
-          image: mvertes/alpine-mongo
+        - name: postgresql
+          image: rafaelor20/coin_manager_db
           resources:
             limits:
               memory: "512Mi"
               cpu: "256m"
           ports:
-            - containerPort: 27017
-              name: mongodb
+            - containerPort: 5432
+              name: postgresql
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongodb
+  name: postgresql
 spec:
   selector:
-    app: mongodb
+    app: postgresql
   ports:
-    - port: 27017
+    - port: 5432
       name: default
-      targetPort: mongodb
+      targetPort: postgresql

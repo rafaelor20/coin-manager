@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: porto-backend
+  name: coin-manager-backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: porto-backend
+      app: coin-manager-backend
   template:
     metadata:
       labels:
-        app: porto-backend
+        app: coin-manager-backend
     spec:
       containers:
-        - image: khaosdoctor/event-sourcing-backend
-          name: porto-backend
+        - image: rafaelor20/coin-manager-node
+          name: coin-manager-backend
           resources:
             requests:
               cpu: 100m
@@ -26,21 +26,21 @@ spec:
             - containerPort: 3000
               name: http
           env:
-            - name: DATABASE_MONGODB_URI
+            - name: DATABASE_POSTGRESQL_URI
               valueFrom:
                 secretKeyRef:
-                  key: database_mongodb_uri
+                  key: database_postgresql_uri
                   name: backend-db
-            - name: DATABASE_MONGODB_DBNAME
+            - name: DATABASE_POSTGRESQL_DBNAME
               value: ship_manager
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: porto-backend
+  name: coin-manager-backend
 spec:
   selector:
-    app: porto-backend
+    app: coin-manager-backend
   ports:
     - name: http
       port: 80
@@ -49,7 +49,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: porto-backend
+  name: coin-manager-backend
   annotations:
     kubernetes.io/ingress.class: addon-http-application-routing
 spec:
@@ -61,7 +61,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: porto-backend
+                name: coin-manager-backend
                 port:
                   name: http
 ---
@@ -71,4 +71,4 @@ metadata:
   name: backend-db
 type: Opaque
 stringData:
-  database_mongodb_uri: mongodb://mongodb:27017/ship_manager
+  database_postgresql_uri: postgresql://postgres:root@postgresql:5432/coin_manager
