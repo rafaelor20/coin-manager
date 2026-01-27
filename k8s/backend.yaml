@@ -23,16 +23,21 @@ spec:
               cpu: 250m
               memory: 256Mi
           ports:
-            - containerPort: 3000
+            - containerPort: 5000
               name: http
           env:
-            - name: DATABASE_POSTGRESQL_URI
+            - name: PORT
+              value: "5000"
+            - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
-                  key: database_postgresql_uri
-                  name: backend-db
-            - name: DATABASE_POSTGRESQL_DBNAME
-              value: ship_manager
+                  key: database_url
+                  name: backend-secrets
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: jwt_secret
+                  name: backend-secrets
 ---
 apiVersion: v1
 kind: Service
@@ -44,17 +49,16 @@ spec:
   ports:
     - name: http
       port: 80
-      targetPort: 3000
+      targetPort: 5000
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: coin-manager-backend
-  annotations:
-    kubernetes.io/ingress.class: addon-http-application-routing
 spec:
+  ingressClassName: nginx
   rules:
-    - host: uri
+    - host: backend.coin-manager.com
       http:
         paths:
           - path: /
@@ -68,7 +72,8 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: backend-db
+  name: backend-secrets
 type: Opaque
 stringData:
-  database_postgresql_uri: postgresql://postgres:root@postgresql:5432/coin_manager
+  database_url: postgresql://postgres:root@postgres:5432/coin_manager
+  jwt_secret: top_secret
