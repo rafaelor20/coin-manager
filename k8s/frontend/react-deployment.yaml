@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react
+  namespace: coin-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react
+  template:
+    metadata:
+      labels:
+        app: react
+    spec:
+      containers:
+        - name: react
+          image: rafaelor20/coin-manager-react:latest
+          command: [ "npx" ]
+          args: [ "serve", "-s", "/var/www/html", "-l", "80" ]
+          ports:
+            - containerPort: 80

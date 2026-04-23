@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: react
+  namespace: coin-manager
+spec:
+  selector:
+    app: react
+  ports:
+    - port: 80
+      targetPort: 80

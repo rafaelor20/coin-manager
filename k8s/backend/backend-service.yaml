@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: node
+  namespace: coin-manager
+spec:
+  selector:
+    app: node
+  ports:
+    - port: 5000
+      targetPort: 5000

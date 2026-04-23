@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: coin-manager
+data:
+  default.conf: |
+    server {
+        listen 80;
+
+        location /api {
+            proxy_pass http://node:5000;
+        }
+
+        location / {
+            proxy_pass http://react:80;
+        }
+    }
