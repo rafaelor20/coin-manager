@@ -27,7 +27,7 @@ minikube addons enable ingress
 Apply all the Kubernetes manifests located in this directory:
 
 ```bash
-kubectl apply -f .
+kubectl create namespace coin-manager --dry-run=client -o yaml | kubectl apply -f k8s/ -R
 ```
 
 This command will create the deployments, services, secrets, and persistent volume claims required for the application to run.
@@ -40,18 +40,11 @@ To access the application, you need to get the IP address of your Minikube clust
 minikube ip
 ```
 
-Once you have the IP address, you need to add the following entries to your `/etc/hosts` file to be able to resolve the hosts defined in the ingress rules:
+Once you have the ip address, paste it in the browser and you can access the application
 
+```bash
+<minikube_ip>:30007
 ```
-<MINIKUBE_IP> frontend.coin-manager.com
-<MINIKUBE_IP> backend.coin-manager.com
-```
-
-Replace `<MINIKUBE_IP>` with the actual IP address you got from the `minikube ip` command.
-
-Now you can access:
-- **Frontend:** [http://frontend.coin-manager.com](http://frontend.coin-manager.com)
-- **Backend:** [http://backend.coin-manager.com](http://backend.coin-manager.com)
 
 ## 4. Deleting the Cluster
 

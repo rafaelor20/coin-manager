@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: rafaelor20/coin-manager-nginx:latest
+          image: rafaelor20/coin_manager_nginx:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80

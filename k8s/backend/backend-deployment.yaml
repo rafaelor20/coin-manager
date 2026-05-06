@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: node
-          image: rafaelor20/coin-manager-node:latest
+          image: rafaelor20/coin_manager_node:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
