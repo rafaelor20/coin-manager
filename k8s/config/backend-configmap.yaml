@@ -8,4 +8,7 @@ data:
   POSTGRES_PORT: "5432"
   POSTGRES_USER: root
   POSTGRES_PASSWORD: password
-  POSTGRES_DATABASE: safety-trainer-db
+  POSTGRES_DB: coin_manager
+  POSTGRES_DATABASE: coin_manager
+  DATABASE_URL: "postgresql://root:password@postgres:5432/coin_manager?schema=public"
+  JWT_SECRET: "top_secret"

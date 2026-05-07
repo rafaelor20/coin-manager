@@ -27,12 +27,21 @@ minikube addons enable ingress
 Apply all the Kubernetes manifests located in this directory:
 
 ```bash
-kubectl create namespace coin-manager --dry-run=client -o yaml | kubectl apply -f k8s/ -R
+kubectl create namespace coin-manager --dry-run=client -o yaml | kubectl apply -f -
+```
+```bash
+kubectl apply -f k8s/ -R
 ```
 
 This command will create the deployments, services, secrets, and persistent volume claims required for the application to run.
 
 ## 3. Accessing the Application
+
+Before trying to access the application, run the command bellow to check if all the container have the status equal to "Running", if not, wait 1 or 2 minutes
+
+```bash
+kubectl get pods -n coin-manager
+```
 
 To access the application, you need to get the IP address of your Minikube cluster:
 
