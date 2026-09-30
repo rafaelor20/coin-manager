@@ -1,0 +1,6 @@
+# Ignore local overrides and custom secret manifests
+*.local.yaml
+*secret*.local.yaml
+secrets.yaml
+.env
+.env.*
