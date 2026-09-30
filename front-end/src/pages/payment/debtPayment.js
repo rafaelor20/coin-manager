@@ -1,81 +1,204 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import {
+  FiDollarSign,
+  FiCheckCircle
+} from 'react-icons/fi';
 
-import { Container, Main, Content, CurrentAmount } from '../../components/Payment/styles.js';
-import Page from '../../components/Page.js';
-import Header from '../../components/Header.js';
-import Footer from '../../components/Footer.js';
-import Button from '../../components/Form/Button.js';
-import Input from '../../components/Form/Input.js';
+import getDebtById from '../../hooks/api/getDebtById';
+import payDebt from '../../hooks/api/payDebt';
 
-import getDebtById from '../../hooks/api/getDebtById.js';
-import payDebt from '../../hooks/api/payDebt.js';
+import {
+  Container,
+  Main,
+  DetailsCard,
+  HeaderSection,
+  TitleGroup,
+  SectionTitle,
+  SectionSubtitle,
+  StatusBadge,
+  BalanceCard,
+  BalanceInfo,
+  BalanceLabel,
+  CurrentAmount,
+  DetailsGrid,
+  DetailItem,
+  DetailLabel,
+  DetailValue,
+  FormCard,
+  PaymentForm,
+  QuickFillRow,
+  QuickFillButton
+} from '../../components/Payment/styles';
+import Header from '../../components/Header';
+import Page from '../../components/Page';
+import Button from '../../components/Form/Button';
+import Input from '../../components/Form/Input';
 
 export default function DebtPayment() {
-  const debtId = useParams().debtId;
-  const [debt, setDebt] = useState({});
-  const [amount, setAmount] = useState(0);
+  const { debtId } = useParams();
+  const navigate = useNavigate();
+
+  const [debt, setDebt] = useState(null);
+  const [amount, setAmount] = useState('');
+  const [loadingPayment, setLoadingPayment] = useState(false);
+
   const { useGetDebtById } = getDebtById();
   const { payDebt: registerPayDebt } = payDebt();
 
   useEffect(() => {
-    const fetchCredit = async() => {
+    const fetchDebt = async() => {
       try {
         const response = await useGetDebtById(debtId);
         setDebt(response);
       } catch (error) {
-        toast('Error fetching debt:', error);
+        toast.error('Erro ao buscar detalhes da dívida.');
       }
     };
 
-    fetchCredit();
+    if (debtId) {
+      fetchDebt();
+    }
   }, [debtId]);
+
+  const handleQuickFill = () => {
+    if (debt?.amount) {
+      setAmount(String(debt.amount));
+    }
+  };
 
   const handleSubmit = async(event) => {
     event.preventDefault();
 
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      toast.warning('Informe um valor de pagamento válido maior que zero.');
+      return;
+    }
+
+    if (debt && parsedAmount > debt.amount) {
+      toast.warning('O valor informado é maior que o total da dívida.');
+      return;
+    }
+
+    setLoadingPayment(true);
     try {
-      await registerPayDebt( debt.id, { amount: amount });
-
-      setAmount(0);
-
-      toast('Debt paid successfully!');
+      await registerPayDebt(debt.id, { amount: parsedAmount });
+      toast.success('Pagamento de dívida registrado com sucesso!');
+      navigate('/listDebts');
     } catch (error) {
-      toast('Error paying debt:', error.message);
+      toast.error('Erro ao processar pagamento: ' + (error.message || ''));
+      setLoadingPayment(false);
     }
   };
 
-  const formattedDate = debt.payDate 
-    ? `${new Date(debt.payDate).getMonth() + 1}/${new Date(debt.payDate).getDate()}` 
-    : 'No Date';
+  const formattedDate = debt?.payDate
+    ? new Date(debt.payDate).toLocaleDateString('pt-BR')
+    : 'Sem data definida';
+
+  const formatCurrency = (val) => {
+    const num = Number(val) || 0;
+    return `R$ ${num.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })}`;
+  };
 
   return (
     <Page>
       <Container>
-        <Header text="To Debts" to="/listDebts"/>
+        <Header
+          text="Pagar Dívida"
+          subtitle="Realize o pagamento total ou amortização parcial do seu débito"
+          to="/listDebts"
+        />
+
         <Main>
-          <Content>
-            <CurrentAmount>Current Amount: {debt.amount}</CurrentAmount>
-            <p>Creditor: {debt.creditor}</p>
-            <p>Description: {debt.description}</p>
-            <p>To be paid: {formattedDate}</p>
-          </Content>
-          <Main>
-            <form onSubmit={handleSubmit}>
+          {debt && (
+            <DetailsCard>
+              <HeaderSection>
+                <TitleGroup>
+                  <SectionTitle>Detalhes do Débito</SectionTitle>
+                  <SectionSubtitle>ID #{debt.id}</SectionSubtitle>
+                </TitleGroup>
+                <StatusBadge type="debt">Pendente</StatusBadge>
+              </HeaderSection>
+
+              <BalanceCard type="debt">
+                <BalanceInfo>
+                  <BalanceLabel>Valor Total Pendente</BalanceLabel>
+                  <CurrentAmount type="debt">
+                    {formatCurrency(debt.amount)}
+                  </CurrentAmount>
+                </BalanceInfo>
+              </BalanceCard>
+
+              <DetailsGrid>
+                <DetailItem>
+                  <DetailLabel>Credor</DetailLabel>
+                  <DetailValue>{debt.creditor || 'Não informado'}</DetailValue>
+                </DetailItem>
+
+                <DetailItem>
+                  <DetailLabel>Vencimento</DetailLabel>
+                  <DetailValue>{formattedDate}</DetailValue>
+                </DetailItem>
+
+                <DetailItem style={{ gridColumn: '1 / -1' }}>
+                  <DetailLabel>Descrição</DetailLabel>
+                  <DetailValue>
+                    {debt.description || 'Sem descrição cadastrada'}
+                  </DetailValue>
+                </DetailItem>
+              </DetailsGrid>
+            </DetailsCard>
+          )}
+
+          <FormCard>
+            <HeaderSection>
+              <TitleGroup>
+                <SectionTitle>Realizar Pagamento / Amortização</SectionTitle>
+                <SectionSubtitle>
+                  Informe o valor a ser quitado
+                </SectionSubtitle>
+              </TitleGroup>
+            </HeaderSection>
+
+            <PaymentForm onSubmit={handleSubmit}>
               <Input
-                label="Value"
+                label="Valor a Pagar (R$)"
                 type="number"
+                step="0.01"
+                min="0.01"
+                max={debt?.amount || undefined}
+                placeholder="0,00"
+                icon={<FiDollarSign />}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
+                required
               />
-              <Button type="submit" color="primary" fullWidth>
-              Send
+
+              {debt?.amount && (
+                <QuickFillRow>
+                  <QuickFillButton type="button" onClick={handleQuickFill}>
+                    Pagar Valor Total ({formatCurrency(debt.amount)})
+                  </QuickFillButton>
+                </QuickFillRow>
+              )}
+
+              <Button
+                type="submit"
+                variant="danger"
+                fullWidth
+                loading={loadingPayment}
+                icon={<FiCheckCircle />}
+              >
+                Confirmar Pagamento
               </Button>
-            </form>
-          </Main>
+            </PaymentForm>
+          </FormCard>
         </Main>
-        <Footer/>
       </Container>
     </Page>
   );

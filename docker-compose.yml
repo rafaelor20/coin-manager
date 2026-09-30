@@ -1,14 +1,20 @@
 services:
   postgres:
-    image: rafaelor20/coin_manager_db:v2
+    image: postgres:17-alpine
+    pull_policy: if_not_present
     container_name: coin_manager_db
     restart: always
     ports:
       - 5433:5432
     env_file:
-      - back-end/.env.development
+      - back-end/.env.compose
     volumes:
       - postgres-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d coin_manager"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   node:
     container_name: coin_manager_backend
@@ -17,9 +23,10 @@ services:
     ports:
       - 5000:5000
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     env_file:
-      - back-end/.env.development
+      - back-end/.env.compose
 
   react:
     container_name: coin_manager_react

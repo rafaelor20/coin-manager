@@ -2,9 +2,9 @@ import Joi from 'joi';
 
 export const creditSchema = Joi.object({
   debtor: Joi.string().required(),
-  description: Joi.string(),
+  description: Joi.string().allow('', null).optional(),
   amount: Joi.number().positive().required(),
-  payDate: Joi.date().custom((value, helpers) => {
+  payDate: Joi.date().allow(null, '').optional().custom((value, helpers) => {
     if (!value) return value;
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);

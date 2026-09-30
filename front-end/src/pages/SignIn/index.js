@@ -1,17 +1,25 @@
 import { useState, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { FiMail, FiLock, FiLogIn } from 'react-icons/fi';
+import { FaCoins } from 'react-icons/fa';
 
 import Page from '../../components/Page';
-
 import Input from '../../components/Form/Input';
 import Button from '../../components/Form/Button';
 import Link from '../../components/Link';
-import { Container, Row, Title, Label } from '../../components/Auth';
+import {
+  Container,
+  AuthCard,
+  HeaderSection,
+  LogoBadge,
+  Title,
+  Subtitle,
+  FormSection,
+  LinksSection,
+} from '../../components/Auth';
 import UserContext from '../../contexts/UserContext';
 import useSignIn from '../../hooks/api/useSignIn';
-
-import logo from '../../assets/logo.png';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
@@ -24,37 +32,64 @@ export default function SignIn() {
   async function submit(event) {
     event.preventDefault();
 
+    if (!email || !password) {
+      toast.warning('Preencha seu e-mail e senha!');
+      return;
+    }
+
     try {
       const userData = await signIn(email, password);
       setUserData(userData);
-      //toast('Login!');
+      toast.success('Login realizado com sucesso!');
       navigate('/home');
     } catch (err) {
-      toast('Something is wrong!');
+      toast.error('E-mail ou senha inválidos!');
     }
   }
 
   return (
-    <Page >
+    <Page showNav={false}>
       <Container>
-        <Row>
-          <img src={logo} alt="Coin Manager Logo" width="140px" />
-          <Title>Coin Manager</Title>
-        </Row>
-        <Row>
-          <Label></Label>
-          <form onSubmit={submit}>
-            <Input label="E-mail" type="text" fullWidth value={email} onChange={e => setEmail(e.target.value)} />
-            <Input label="Password" type="password" fullWidth value={password} onChange={e => setPassword(e.target.value)} />
-            <Button type="submit" color="primary" fullWidth disabled={loadingSignIn}>LOGIN</Button>
-          </form>
-        </Row>
-        <Row>
-          <Link to="/Sign-up">Create a account here!</Link>
-        </Row>
-        <Row>
-          <Link to="/forgot-password">Forgot password?</Link>
-        </Row>
+        <AuthCard>
+          <HeaderSection>
+            <LogoBadge>
+              <FaCoins />
+            </LogoBadge>
+            <Title>
+              Coin<span>Manager</span>
+            </Title>
+            <Subtitle>Registre suas finanças por aqui.</Subtitle>
+          </HeaderSection>
+
+          <FormSection onSubmit={submit}>
+            <Input
+              label="E-mail"
+              type="email"
+              icon={<FiMail />}
+              placeholder="seu.email@exemplo.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Input
+              label="Senha"
+              type="password"
+              icon={<FiLock />}
+              placeholder="Digite sua senha"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <Button type="submit" variant="primary" fullWidth loading={loadingSignIn} icon={<FiLogIn />}>
+              Entrar na Conta
+            </Button>
+          </FormSection>
+
+          <LinksSection>
+            <Link to="/sign-up">Não tem uma conta? Cadastre-se aqui</Link>
+            <Link to="/forgot-password">Esqueceu sua senha?</Link>
+          </LinksSection>
+        </AuthCard>
       </Container>
     </Page>
   );

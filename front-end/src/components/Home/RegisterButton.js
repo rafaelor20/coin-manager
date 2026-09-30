@@ -8,31 +8,37 @@ export default function RegisterButton(props) {
     text: PropTypes.string.isRequired,
   };
   return (
-    <Link to={props.to}>
+    <StyledLink to={props.to}>
       <RegisterButtonDiv>
-        <p>{props.text}</p>
+        <span>{props.text}</span>
       </RegisterButtonDiv>
-    </Link>
+    </StyledLink>
   );
 }
 
-const RegisterButtonDiv = styled.button`
-  display: inline-block;
-  width: 135px;
-  height: 80px;
-  margin: 2px;
-  padding: 10px 25px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  font-weight: bold;
+const StyledLink = styled(Link)`
   text-decoration: none;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #0056b3;
-  }
+  flex: 1 1 calc(50% - 10px);
+  min-width: 140px;
 `;
 
+const RegisterButtonDiv = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  background: var(--primary-gradient);
+  color: #fff;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+  }
+`;

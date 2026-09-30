@@ -2,12 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import getCredits from '../../hooks/api/getCredits';
 
-import { Container, Main, Content, CurrentAmount } from '../../components/Lists/styles.js';
+import {
+  Container,
+  Main,
+  Content,
+  SummaryBanner,
+  SummaryInfo,
+  SummaryLabel,
+  CurrentAmount,
+  SummaryCount
+} from '../../components/Lists/styles';
 
-import Page from '../../components/Page.js';
-import CreditContainer from '../../components/Lists/CreditHistory.js';
-import Header from '../../components/Lists/Header.js';
-import Footer from '../../components/Footer.js';
+import Page from '../../components/Page';
+import CreditContainer from '../../components/Lists/CreditHistory';
+import Header from '../../components/Header';
 
 export default function ListCredits() {
   const { useGetCredits } = getCredits();
@@ -15,38 +23,63 @@ export default function ListCredits() {
   const [currentAmount, setCurrentAmount] = useState(0);
 
   useEffect(() => {
-    const fetchTransactions = async() => {
+    const fetchCredits = async() => {
       try {
         const response = await useGetCredits();
-        setCredits(response);
+        if (Array.isArray(response)) {
+          setCredits(response);
+        }
       } catch (error) {
-        toast('Error fetching credits:', error);
+        toast.error('Erro ao buscar lista de empréstimos concedidos.');
       }
     };
 
-    fetchTransactions();
+    fetchCredits();
   }, []);
 
   useEffect(() => {
-    const calculateCurrentAmount = () => {
-      const sum = credits.reduce((total, credit) => total + credit.amount, 0);
+    if (Array.isArray(credits)) {
+      const sum = credits.reduce(
+        (total, credit) => total + (Number(credit.amount) || 0),
+        0
+      );
       setCurrentAmount(sum);
-    };
-
-    calculateCurrentAmount();
+    }
   }, [credits]);
+
+  const formatCurrency = (val) => {
+    const num = Number(val) || 0;
+    return `R$ ${num.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })}`;
+  };
 
   return (
     <Page>
       <Container>
-        <Header text="Return"/>
+        <Header
+          text="Empréstimos Concedidos"
+          subtitle="Acompanhe e registre a liquidação de valores emprestados a terceiros"
+          to="/home"
+        />
         <Main>
           <Content>
-            <CurrentAmount>Current Amount: ${currentAmount}</CurrentAmount>
-            <CreditContainer credits={credits}></CreditContainer>
+            <SummaryBanner type="credit">
+              <SummaryInfo>
+                <SummaryLabel>Total a Receber</SummaryLabel>
+                <CurrentAmount type="credit">
+                  {formatCurrency(currentAmount)}
+                </CurrentAmount>
+              </SummaryInfo>
+              <SummaryCount>
+                {credits.length} empréstimo(s) ativo(s)
+              </SummaryCount>
+            </SummaryBanner>
+
+            <CreditContainer credits={credits} />
           </Content>
         </Main>
-        <Footer/>
       </Container>
     </Page>
   );

@@ -1,17 +1,22 @@
-# avoid routine error problem: error:0308010C:digital envelope routines::unsupported
-FROM node:16-alpine
+# Stage 1: Build the React application
+FROM node:16-alpine AS builder
 
-# folder where the build will go
-WORKDIR /tmp/react
+WORKDIR /app
 
-# copy files into the WORKDIR folder
+# Install project dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy source files and create production build
 COPY . .
+RUN npm run build
 
-# install project dependencies
-RUN npm i && npm run build && mkdir -p /var/www/html && mv build/* /var/www/html
+# Stage 2: Minimal production image containing only the built static assets
+FROM alpine:3.19
 
-# exit the folder
-WORKDIR /
+WORKDIR /var/www/html
 
-# remove the entire development directory
-RUN rm -rf /tmp/react
+# Copy build artifacts from builder stage
+COPY --from=builder /app/build /var/www/html
+
+CMD ["tail", "-f", "/dev/null"]

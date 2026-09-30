@@ -117,9 +117,9 @@ Before running migrations make sure you have a postgres db running based using t
 docker-compose up -d postgres
 ```
 
-- `npm run dev:migration:run` - run migrations for development environment by loading envs from .env.development file. It uses [dotenv-cli](https://github.com/entropitor/dotenv-cli#readme) to load envs from .env.development file.
-- `npm run test:migration:run` - the same, but for test environment
-
-- `npm run dev:migration:generate -- --name ATOMIC_OPERATION_NAME` - generate and run migration and prisma client for development environment by loading envs from .env.development file. Replace `ATOMIC_OPERATION_NAME` by the name of the migration you want to generate.
-
-- `dev:seed` - seed the database with info on the seed.ts file.
+- `npm run dev:migration:run` - run migrations for local environment by loading envs from .env.local file.
+- `npm run compose:migration:run` - run migrations for docker-compose environment by loading envs from .env.compose file.
+- `npm run test:migration:run` - the same, but for test environment by loading envs from .env.test file.
+- `npm run dev:migration:generate -- --name ATOMIC_OPERATION_NAME` - generate and run migration and prisma client for local environment. Replace `ATOMIC_OPERATION_NAME` by the name of the migration you want to generate.
+- `npm run dev:seed` - seed the database with info on the seed.ts file using .env.local.
+- `npm run compose:seed` - seed the database using .env.compose.

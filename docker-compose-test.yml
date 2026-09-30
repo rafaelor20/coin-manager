@@ -6,10 +6,8 @@ services:
     restart: always
     ports:
       - "5433:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: coin_manager_test
+    env_file:
+      - ./back-end/.env.test
     volumes:
       - pgdata-test:/var/lib/postgresql/data
     healthcheck:
@@ -21,7 +19,9 @@ services:
       - test-net
 
   node-test:
-    build: ./back-end
+    build:
+      context: ./back-end
+      target: builder
     container_name: coin_manager_backend_test
     depends_on:
       postgres-test:

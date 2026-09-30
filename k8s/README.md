@@ -280,7 +280,11 @@ Your persistent database data and configurations will still be intact.
 To completely remove all Kubernetes resources, deployments, services, secrets, and **permanently delete the persistent database data**:
 
 ```bash
+<<<<<<< HEAD
 kubectl delete namespace coin-manager
+=======
+kubectl apply -R -f .
+>>>>>>> main
 ```
 
 > [!CAUTION]

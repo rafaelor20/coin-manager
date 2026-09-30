@@ -7,14 +7,19 @@
     "prebuild": "rm -rf dist",
     "build": "cross-env CI=false npx ttsc -p tsconfig.build.json",
     "start": "node dist/server.js",
-    "seed": "ts-node prisma/seed.ts",
+    "seed": "dotenv -e .env.local ts-node prisma/seed.ts",
     "lint": "eslint .",
     "lint:staged": "lint-staged",
     "migration:generate": "npx prisma migrate dev",
     "migration:run": "npx prisma migrate deploy",
-    "dev": "cross-env NODE_ENV=development nodemon --watch 'src/' --exec 'ts-node -r tsconfig-paths/register ./src/server.ts' -e ts",
-    "dev:seed": "npm run dev:load-envs prisma db seed",
+    "dev": "cross-env NODE_ENV=local nodemon --watch 'src/' --exec 'ts-node -r tsconfig-paths/register ./src/server.ts' -e ts",
+    "dev:seed": "dotenv -e .env.local ts-node prisma/seed.ts",
+    "dev:migration:run": "dotenv -e .env.local prisma migrate deploy",
+    "dev:migration:generate": "dotenv -e .env.local prisma migrate dev",
+    "compose:seed": "dotenv -e .env.compose ts-node prisma/seed.ts",
+    "compose:migration:run": "dotenv -e .env.compose prisma migrate deploy",
     "test": "cross-env NODE_ENV=test jest --passWithNoTests --runInBand",
+    "test:migration:run": "dotenv -e .env.test prisma migrate deploy",
     "test:coverage": "cross-env NODE_ENV=test jest --passWithNoTests --runInBand --coverage --collectCoverageFrom='./src/**'",
     "test:watch": "cross-env NODE_ENV=test jest --watch --passWithNoTests --runInBand"
   },
@@ -29,7 +34,7 @@
   "author": "Rafael Oliveira Rosario",
   "license": "ISC",
   "prisma": {
-    "seed": "npm run dev:load-envs -- ts-node prisma/seed.ts"
+    "seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.3.1",
@@ -46,7 +51,6 @@
     "@typescript-eslint/eslint-plugin": "^5.41.0",
     "@typescript-eslint/parser": "^5.41.0",
     "cross-env": "^7.0.3",
-    "dotenv": "^16.4.5",
     "dotenv-cli": "^5.1.0",
     "eslint": "^8.26.0",
     "eslint-config-prettier": "^8.5.0",
@@ -74,6 +78,7 @@
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dayjs": "^1.11.2",
+    "dotenv": "^16.4.5",
     "dotenv-expand": "^8.0.3",
     "express": "^4.18.1",
     "express-async-errors": "^3.1.1",

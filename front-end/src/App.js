@@ -16,29 +16,42 @@ import CreditPayment from './pages/payment/creditPayment';
 import DebtPayment from './pages/payment/debtPayment';
 
 import { UserProvider } from './contexts/UserContext';
-
 import useToken from './hooks/useToken';
 
 export default function App() {
   return (
     <>
-      <ToastContainer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3500}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <UserProvider>
         <Router>
           <Routes>
+            {/* Public Auth Routes */}
             <Route path="/" element={<SignIn />} />
+            <Route path="/sign-in" element={<SignIn />} />
             <Route path="/sign-up" element={<SignUp />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            
+
+            {/* Protected Routes */}
             <Route
               path="/home"
               element={
                 <ProtectedRouteGuard>
                   <Home />
                 </ProtectedRouteGuard>
-              }>
-            </Route>
+              }
+            />
 
             <Route
               path="/moneyIn"
@@ -46,17 +59,17 @@ export default function App() {
                 <ProtectedRouteGuard>
                   <MoneyIn />
                 </ProtectedRouteGuard>
-              }>
-            </Route>
-            
+              }
+            />
+
             <Route
               path="/moneyOut"
               element={
                 <ProtectedRouteGuard>
                   <MoneyOut />
                 </ProtectedRouteGuard>
-              }>
-            </Route>
+              }
+            />
 
             <Route
               path="/credit"
@@ -64,8 +77,8 @@ export default function App() {
                 <ProtectedRouteGuard>
                   <Credit />
                 </ProtectedRouteGuard>
-              }>
-            </Route>
+              }
+            />
 
             <Route
               path="/debt"
@@ -73,8 +86,8 @@ export default function App() {
                 <ProtectedRouteGuard>
                   <Debt />
                 </ProtectedRouteGuard>
-              }>
-            </Route>
+              }
+            />
 
             <Route
               path="/creditPayment/:creditId"
@@ -82,8 +95,8 @@ export default function App() {
                 <ProtectedRouteGuard>
                   <CreditPayment />
                 </ProtectedRouteGuard>
-              }>
-            </Route>
+              }
+            />
 
             <Route
               path="/debtPayment/:debtId"
@@ -91,8 +104,8 @@ export default function App() {
                 <ProtectedRouteGuard>
                   <DebtPayment />
                 </ProtectedRouteGuard>
-              }>
-            </Route>
+              }
+            />
 
             <Route
               path="/listCredits"
@@ -100,8 +113,8 @@ export default function App() {
                 <ProtectedRouteGuard>
                   <ListCredits />
                 </ProtectedRouteGuard>
-              }>
-            </Route>
+              }
+            />
 
             <Route
               path="/listDebts"
@@ -109,9 +122,11 @@ export default function App() {
                 <ProtectedRouteGuard>
                   <ListDebts />
                 </ProtectedRouteGuard>
-              }>
-            </Route>
+              }
+            />
 
+            {/* Catch-all redirect */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Router>
       </UserProvider>
@@ -123,7 +138,7 @@ function ProtectedRouteGuard({ children }) {
   const token = useToken();
 
   if (!token) {
-    return <Navigate to="/sign-in" />;
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;

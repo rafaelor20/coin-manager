@@ -1,0 +1,37 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    pull_policy: if_not_present
+    container_name: coin_manager_db
+    restart: always
+    ports:
+      - 5433:5432
+    env_file:
+      - back-end/.env.compose
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d coin_manager"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  db-reset:
+    build:
+      context: ./back-end
+      target: builder
+    container_name: coin_manager_db_reset
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - back-end/.env.compose
+    command: >
+      sh -c "
+      echo 'Waiting for database connection...' &&
+      npx prisma migrate reset --force &&
+      echo 'Database reset, migrations, and seed completed successfully!'
+      "
+
+volumes:
+  postgres-volume:

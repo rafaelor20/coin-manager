@@ -33,19 +33,11 @@ npm start
 
 ## Running application locally or inside docker
 
-`.env.development` and `.env.test` must be changed if you and to run the application locally or inside docker. You can populate files based on `.env.example` file, but you need to consider the following:
-
-- Running application locally (postgres and node):
-
-Add your postgres credentials and make sure to create given database before running the application.
-
-- Running application inside docker (postgres and node):
-
-Set `POSTGRES_HOST` to `drivent-postgres-development` for `.env.development` and `drivent-postgres-test` for `.env.test` file. It is the name of the postgres container inside docker-compose file. Docker Compose will start the postgres container for you, create the database and host alias for you.
-
-- Running application locally (node) but postgres is running inside docker:
-
-Set `POSTGRES_HOST` to `localhost` for `.env.development` and `localhost` for `.env.test` file. Docker compose is configured to expose postgres container to your localhost.
+The `.env` files are organized by environment:
+- `.env.compose`: For running the complete stack with Docker Compose.
+- `.env.local`: For running frontend locally with `npm start`.
+- `.env.test`: For automated test environments.
+- `.env`: Base/common environment file that has top priority.
 
 ## What to do when add new ENV VARIABLES
 

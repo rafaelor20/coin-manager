@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-
 import getDebts from '../../hooks/api/getDebts';
 
-import { Container, Main, Content, CurrentAmount } from '../../components/Lists/styles.js';
-import Page from '../../components/Page.js';
-import DebtContainer from '../../components/Lists/DebtHistory.js';
-import Header from '../../components/Lists/Header.js';
-import Footer from '../../components/Footer.js';
+import {
+  Container,
+  Main,
+  Content,
+  SummaryBanner,
+  SummaryInfo,
+  SummaryLabel,
+  CurrentAmount,
+  SummaryCount
+} from '../../components/Lists/styles';
+
+import Page from '../../components/Page';
+import DebtContainer from '../../components/Lists/DebtHistory';
+import Header from '../../components/Header';
 
 export default function ListDebts() {
   const { useGetDebts } = getDebts();
@@ -15,40 +23,64 @@ export default function ListDebts() {
   const [currentAmount, setCurrentAmount] = useState(0);
 
   useEffect(() => {
-    const fetchTransactions = async() => {
+    const fetchDebts = async() => {
       try {
         const response = await useGetDebts();
-        setDebts(response);
+        if (Array.isArray(response)) {
+          setDebts(response);
+        }
       } catch (error) {
-        toast('Error fetching debts:', error);
+        toast.error('Erro ao buscar lista de dívidas pendentes.');
       }
     };
 
-    fetchTransactions();
+    fetchDebts();
   }, []);
 
   useEffect(() => {
-    const calculateCurrentAmount = () => {
-      const sum = debts.reduce((total, debt) => total + debt.amount, 0);
+    if (Array.isArray(debts)) {
+      const sum = debts.reduce(
+        (total, debt) => total + (Number(debt.amount) || 0),
+        0
+      );
       setCurrentAmount(sum);
-    };
-
-    calculateCurrentAmount();
+    }
   }, [debts]);
+
+  const formatCurrency = (val) => {
+    const num = Number(val) || 0;
+    return `R$ ${num.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })}`;
+  };
 
   return (
     <Page>
       <Container>
-        <Header text="Return"/>
+        <Header
+          text="Dívidas Pendentes"
+          subtitle="Gerencie seus débitos a pagar e realize amortizações parciais ou totais"
+          to="/home"
+        />
         <Main>
           <Content>
-            <CurrentAmount>Current Amount: ${currentAmount}</CurrentAmount>
-            <DebtContainer debts={debts}></DebtContainer>
+            <SummaryBanner type="debt">
+              <SummaryInfo>
+                <SummaryLabel>Total a Pagar</SummaryLabel>
+                <CurrentAmount type="debt">
+                  {formatCurrency(currentAmount)}
+                </CurrentAmount>
+              </SummaryInfo>
+              <SummaryCount>
+                {debts.length} dívida(s) cadastrada(s)
+              </SummaryCount>
+            </SummaryBanner>
+
+            <DebtContainer debts={debts} />
           </Content>
         </Main>
-        <Footer/>
       </Container>
     </Page>
   );
 }
-
